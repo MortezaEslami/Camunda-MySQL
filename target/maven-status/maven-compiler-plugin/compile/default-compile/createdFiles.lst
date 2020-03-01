@@ -1,0 +1,10 @@
+com/example/workflow/configuaration/SecurityConfiguration.class
+com/example/workflow/service/SecondServiceTask.class
+com/example/workflow/Application.class
+com/example/workflow/configuaration/ExampleProcessEngineConfiguration.class
+com/example/workflow/service/ThirdServiceTask.class
+com/example/workflow/service/FirstServiceTask.class
+com/example/workflow/controller/StartProcess.class
+com/example/workflow/repository/EmployeeRowMapper.class
+com/example/workflow/domain/Employee.class
+com/example/workflow/repository/EmployeeJDBCRepository.class
