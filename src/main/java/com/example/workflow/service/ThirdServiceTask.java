@@ -1,30 +1,28 @@
 package com.example.workflow.service;
 
-import com.example.workflow.repository.EmployeeJDBCRepository;
+import com.example.workflow.domain.Employee;
+import com.example.workflow.repository.EmployeeRepository;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Random;
 
+@AllArgsConstructor
+@Slf4j
 @Component
 public class ThirdServiceTask implements JavaDelegate {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ThirdServiceTask.class);
-
-    @Autowired
-    private EmployeeJDBCRepository employeeRepository;
+    private final EmployeeRepository employeeRepository;
 
     @Override
-    public void execute(DelegateExecution execution) throws Exception {
-        int value = (int) execution.getVariable("value");
-        LOGGER.info(" Third Service Task with value {}!!!!" , value);
-        int result =  employeeRepository.deleteById(value);
-        execution.setVariable("deleteResult", result);
-        LOGGER.info( "result  returns {}  ", result);
+    public void execute(DelegateExecution execution) {
+        Integer value = (Integer) execution.getVariable("value");
+        log.info(" Third service task with value {}!!!!", value);
+        Employee employee = employeeRepository.save(new Employee(null, "test" + value, "test" + value, value));
+        execution.setVariable("createResult", employee.getId());
+        log.info(" Result  returns {}  ", employee.getId());
     }
 
 }

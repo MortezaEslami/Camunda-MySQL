@@ -1,7 +1,7 @@
 package com.example.workflow.configuaration;
 
+import lombok.AllArgsConstructor;
 import org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -14,112 +14,69 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
-
 import java.io.IOException;
 
-
+@AllArgsConstructor
 @Configuration
 public class ExampleProcessEngineConfiguration {
 
-
-    @Autowired
     private ResourcePatternResolver resourceLoader;
 
-  @Bean
-  @ConfigurationProperties(prefix="datasource.original")
-  @Primary
-  public DataSourceProperties originalDataSourceProperties() {
-    return new DataSourceProperties();
-  }
+    @Bean
+    @ConfigurationProperties(prefix = "datasource.original")
+    @Primary
+    public DataSourceProperties originalDataSourceProperties() {
+        return new DataSourceProperties();
+    }
 
-  @Bean("db1")
-  @Primary
-  public DataSource originalDataSource() {
-    DataSourceProperties originalDataSourceProperties = originalDataSourceProperties();
-    return DataSourceBuilder.create()
-            .driverClassName(originalDataSourceProperties.getDriverClassName())
-            .url(originalDataSourceProperties.getUrl())
-            .username(originalDataSourceProperties.getUsername())
-            .password(originalDataSourceProperties.getPassword())
-            .build();
-  }
-/*
+    @Bean("db1")
+    @Primary
+    public DataSource originalDataSource() {
+        DataSourceProperties originalDataSourceProperties = originalDataSourceProperties();
+        return DataSourceBuilder.create()
+                .driverClassName(originalDataSourceProperties.getDriverClassName())
+                .url(originalDataSourceProperties.getUrl())
+                .username(originalDataSourceProperties.getUsername())
+                .password(originalDataSourceProperties.getPassword())
+                .build();
+    }
 
-  @Bean
-  @Primary
-  public PlatformTransactionManager originalTransactionManager() {
-    return new DataSourceTransactionManager(originalDataSource());
-  }
-*/
+    @Bean
+    @ConfigurationProperties(prefix = "datasource.camunda")
+    public DataSourceProperties camundaDataSourceProperties() {
+        return new DataSourceProperties();
+    }
 
- /* @Bean(name = "db1Jdbc")
-  public JdbcTemplate abcJdbcTemplate(
-          @Qualifier("db1") DataSource abcDS) {
-    return new JdbcTemplate(abcDS);
-  }
-*/
-  @Bean
-  @ConfigurationProperties(prefix="datasource.camunda")
-  public DataSourceProperties camundaDataSourceProperties() {
-    return new DataSourceProperties();
-  }
+    @Bean("db2")
+    public DataSource camnundaDataSource() {
+        DataSourceProperties camundaDataSourceProperties = camundaDataSourceProperties();
+        return DataSourceBuilder.create()
+                .driverClassName(camundaDataSourceProperties.getDriverClassName())
+                .url(camundaDataSourceProperties.getUrl())
+                .username(camundaDataSourceProperties.getUsername())
+                .password(camundaDataSourceProperties.getPassword())
+                .build();
+    }
 
-  @Bean("db2")
-  public DataSource camnundaDataSource() {
-    DataSourceProperties camundaDataSourceProperties = camundaDataSourceProperties();
-    return DataSourceBuilder.create()
-            .driverClassName(camundaDataSourceProperties.getDriverClassName())
-            .url(camundaDataSourceProperties.getUrl())
-            .username(camundaDataSourceProperties.getUsername())
-            .password(camundaDataSourceProperties.getPassword())
-            .build();
-  }
+    @Bean
+    public PlatformTransactionManager transactionManager() {
+        return new DataSourceTransactionManager(camnundaDataSource());
+    }
 
+    @Bean
+    public SpringProcessEngineConfiguration processEngineConfiguration() throws IOException {
+        SpringProcessEngineConfiguration config = new SpringProcessEngineConfiguration();
 
-  @Bean
-  public PlatformTransactionManager transactionManager() {
-    return new DataSourceTransactionManager(camnundaDataSource());
-  }
+        config.setDataSource(camnundaDataSource());
+        config.setTransactionManager(transactionManager());
 
-  @Bean
-  public SpringProcessEngineConfiguration processEngineConfiguration() throws IOException {
-    SpringProcessEngineConfiguration config = new SpringProcessEngineConfiguration();
+        config.setDatabaseSchemaUpdate("true");
+        config.setHistory("audit");
+        config.setJobExecutorActivate(true);
 
-    config.setDataSource(camnundaDataSource());
-    config.setTransactionManager(transactionManager());
+        Resource[] resources = resourceLoader.getResources("classpath:/*.bpmn");
+        config.setDeploymentResources(resources);
 
-    config.setDatabaseSchemaUpdate("true");
-    config.setHistory("audit");
-    config.setJobExecutorActivate(true);
-
-    Resource[] resources = resourceLoader.getResources("classpath:/*.bpmn");
-    config.setDeploymentResources(resources);
-
-    return config;
-  }
- /*
-  @Bean
-  public ProcessEngineFactoryBean processEngine() {
-    ProcessEngineFactoryBean factoryBean = new ProcessEngineFactoryBean();
-    factoryBean.setProcessEngineConfiguration(processEngineConfiguration());
-    return factoryBean;
-  }
-
-  @Bean
-  public RepositoryService repositoryService(ProcessEngine processEngine) {
-    return processEngine.getRepositoryService();
-  }
-
-*//*  @Bean
-  public RuntimeService runtimeService(ProcessEngine processEngine) {
-    return processEngine.getRuntimeService();
-  }*//*
-
-  @Bean
-  public TaskService taskService(ProcessEngine processEngine) {
-    return processEngine.getTaskService();
-  }
-
-  // more engine services and additional beans ...
-*/
+        return config;
+    }
 }

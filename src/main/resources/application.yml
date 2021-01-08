@@ -1,0 +1,33 @@
+#datasource.original.driver-class-name: com.mysql.cj.jdbc.Driver
+#datasource.original.url: jdbc:mysql://localhost:3306/test
+#datasource.original.username: root
+#datasource.original.password: root
+#
+#datasource.camunda.driver-class-name: com.mysql.cj.jdbc.Driver
+#datasource.camunda.url: jdbc:mysql://localhost:3306/camunda
+#datasource.camunda.username: root
+#datasource.camunda.password: root
+datasource:
+  original:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/test
+    username: root
+    password: root
+  camunda:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/camunda
+    username: root
+    password: root
+
+
+
+
+spring:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+  security:
+    user:
+      name: admin
+      password: admin
